@@ -2,7 +2,7 @@ import numpy as np
 import argparse
 import cv2
 
-# Xu ly tham so dau vao
+# input
 parser = argparse.ArgumentParser(description='Use MobileNet SSD on Pi for object detection')
 parser.add_argument("--vid_file", help="Duong dan den file video")
 parser.add_argument("--prototxt", default="MobileNetSSD_deploy.prototxt")
@@ -21,7 +21,7 @@ def cal_position(detections,i,cols,rows):
     # Lay class_id
     class_id = int(detections[0, 0, i, 1])
 
-    # Tinh toan vi tri cua doi tuong
+    # object position
     xLeftBottom = int(detections[0, 0, i, 3] * cols)
     yLeftBottom = int(detections[0, 0, i, 4] * rows)
     xRightTop = int(detections[0, 0, i, 5] * cols)
@@ -44,16 +44,16 @@ def do_detect(frame, net, classNames):
     # Resize anh ve 300x300
     frame_resized = cv2.resize(frame, (300, 300))
 
-    # Doc blob va dua vao mang predict
+    # Read blob va load to predict array
     blob = cv2.dnn.blobFromImage(frame_resized, 0.007843, (300, 300), (127.5, 127.5, 127.5), False)
     net.setInput(blob)
     detections = net.forward()
 
-    # Xu ly output cua mang
+    # Output
     cols = frame_resized.shape[1]
     rows = frame_resized.shape[0]
 
-    # Duyet qua cac object detect duoc
+    #  object detect
     for i in range(detections.shape[2]):
         # Lay gia tri confidence
         confidence = detections[0, 0, i, 2]
